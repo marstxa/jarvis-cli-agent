@@ -44,8 +44,44 @@ Requires Python (version pinned in `.python-version`) and a
 ```bash
 git clone https://github.com/marstxa/jarvis-cli-agent
 cd jarvis-cli-agent
-uv sync                              # or: pip install -e .
+```
+
+This project uses [`uv`](https://docs.astral.sh/uv/) to manage
+dependencies in an isolated virtual environment. If you don't have `uv`:
+
+```bash
+# Arch
+sudo pacman -S uv
+# anything else
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Then install dependencies. `uv sync` creates a `.venv/` folder inside the
+project and installs everything into it — it does not touch your system
+Python, so `import google.genai` will fail outside this environment.
+
+```bash
+uv sync
 echo "GEMINI_API_KEY=your-key-here" > .env
+```
+
+Run commands one of two ways: prefix them with `uv run` (no activation
+needed), or activate the environment once per shell session and use plain
+`python` after that:
+
+```bash
+uv run main.py "list the files"
+# or
+source .venv/bin/activate
+python main.py "list the files"
+```
+
+No `uv`? Use the stdlib instead:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
 ```
 
 ## Usage
@@ -83,6 +119,8 @@ operation happens.
 ## Tests
 
 ```bash
+uv run python -m unittest discover
+# or, with the venv activated:
 python -m unittest discover
 ```
 
