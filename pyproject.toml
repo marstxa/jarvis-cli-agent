@@ -1,10 +1,12 @@
 [project]
-name = "jarvis"
+name = "jarvis-cli-agent"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.13"
+description = "A minimal, educational tool-calling coding agent built on the Gemini API"
+requires-python = ">=3.10"
 dependencies = [
-    "google-genai==1.12.1",
-    "python-dotenv==1.1.0",
+    "google-genai",
+    "python-dotenv",
 ]
+
+[tool.setuptools.packages.find]
+include = ["jarvis*"]

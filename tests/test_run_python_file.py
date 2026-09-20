@@ -2,7 +2,7 @@ import subprocess
 import unittest
 from unittest.mock import patch
 
-from functions.run_python_file import run_python_file
+from jarvis.tools.run_python_file import run_python_file
 
 
 class TestRunPythonFile(unittest.TestCase):
@@ -44,7 +44,7 @@ class TestRunPythonFile(unittest.TestCase):
             stdout="partial output before the crash\n",
             stderr="Traceback (most recent call last):\nValueError: boom\n",
         )
-        with patch("functions.run_python_file.subprocess.run", return_value=fake_result):
+        with patch("jarvis.tools.run_python_file.subprocess.run", return_value=fake_result):
             result = run_python_file("calculator", "main.py")
 
         self.assertIn("partial output before the crash", result)

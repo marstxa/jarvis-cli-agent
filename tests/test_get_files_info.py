@@ -1,6 +1,6 @@
 import unittest
 
-from functions.get_files_info import get_files_info
+from jarvis.tools.get_files_info import get_files_info
 
 
 class TestGetFilesInfo(unittest.TestCase):

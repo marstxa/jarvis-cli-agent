@@ -1,6 +1,6 @@
 import unittest
 
-from functions.get_file_content import get_file_content
+from jarvis.tools.get_file_content import get_file_content
 
 
 class TestGetFileContent(unittest.TestCase):

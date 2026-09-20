@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from functions.write_file import write_file
+from jarvis.tools.write_file import write_file
 
 
 class TestWriteFile(unittest.TestCase):
