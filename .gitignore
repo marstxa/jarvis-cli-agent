@@ -5,8 +5,12 @@ build/
 dist/
 wheels/
 *.egg-info
+.python-version.bak
+calculator/_test_scratch.txt
+calculator/_scratch_dir/
 
 # Virtual environments
 .venv
 .env
+
 

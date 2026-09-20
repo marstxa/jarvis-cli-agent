@@ -1,52 +1,48 @@
 import os
 import subprocess
 import sys
+
 from google.genai import types
 
+
 def run_python_file(working_directory, file_path, args=None):
-        
-    working_directory_abs = os.path.abspath(working_directory) #Get absolute directory
+    working_directory_abs = os.path.abspath(working_directory)
+    target_path = os.path.normpath(os.path.join(working_directory_abs, file_path))
 
-    #Construct dir string
-    target_dir = os.path.normpath(os.path.join(working_directory_abs, file_path))
-    validate_target_dir = os.path.commonpath([working_directory_abs, target_dir]) == working_directory_abs
-
-    #Check if directory falls within the target directory
-    if not validate_target_dir:
+    if os.path.commonpath([working_directory_abs, target_path]) != working_directory_abs:
         return f'Error: Cannot execute "{file_path}" as it is outside the permitted working directory'
-    
-    if not os.path.isfile(target_dir):
+
+    if not os.path.isfile(target_path):
         return f'Error: "{file_path}" does not exist'
-    
-    if not target_dir.endswith(".py"):
+
+    if not target_path.endswith(".py"):
         return f'Error: "{file_path}" is not a Python file'
-    
+
+    command = [sys.executable, target_path, *(args or [])]
 
     try:
-        #SUBPROCESS
-        command = [sys.executable, target_dir]
-        
-        if args is not None:
-            command.extend(args)
-        
-        completed_process = subprocess.run(command, capture_output=True, text=True, timeout=30) #run subprocess
-
-        output_log = ""
-
-        #check if process was successful 
-        if completed_process.returncode != 0:
-            output_log += f"Process exited with code {completed_process.returncode}\n"
-        elif completed_process.stdout is None or completed_process.stderr is None:
-            output_log += "No output produced"
-        else:
-            output_log += f"STDOUT: {completed_process.stdout}\nSTDERR: {completed_process.stderr}"
-        
-        return output_log
-    
+        completed_process = subprocess.run(command, capture_output=True, text=True, timeout=30)
     except subprocess.TimeoutExpired:
-        return f"Error: Process timed out after 30 seconds"
+        return "Error: Process timed out after 30 seconds"
     except Exception as e:
         return f"Error: executing Python file: {e}"
+
+    # Previously, a non-zero exit code short-circuited this into a bare
+    # "Process exited with code N" with no stdout/stderr, which threw away
+    # the one thing you need to debug why it failed. Always report both
+    # streams, and note the exit code as well when it's non-zero.
+    parts = []
+    if completed_process.stdout:
+        parts.append(f"STDOUT: {completed_process.stdout}")
+    if completed_process.stderr:
+        parts.append(f"STDERR: {completed_process.stderr}")
+    if completed_process.returncode != 0:
+        parts.append(f"Process exited with code {completed_process.returncode}")
+    if not parts:
+        parts.append("No output produced.")
+
+    return "\n".join(parts)
+
 
 schema_run_python_file = types.FunctionDeclaration(
     name="run_python_file",
